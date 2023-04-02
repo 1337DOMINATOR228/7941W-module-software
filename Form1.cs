@@ -221,7 +221,6 @@ namespace _79412W13._56MHz125KHz
             // check if port is ready for reading
             if (serialPort1.IsOpen)
             {
-
                 try
                 {
                     if (TryToSend(bufReadT5577)) Output(GetAKey(SendAndReadMessage(bufReadT5577)));
@@ -407,58 +406,11 @@ namespace _79412W13._56MHz125KHz
             }
 
 
-        //DATA BASE CODE PART 
-        public bool AccessFlag = false;
-
-        public string connect = "server=localhost;user=root;password=1337;database=vaulttechsecure;port=3306;charset=utf8;convert zero datetime=True";
 
         string SerialNumber;
         public byte[] key = new byte[5];
         string[] InputData = new string[5];
-        void update()
-        {
-            try
-            {
-                MySqlConnection mycon = new MySqlConnection(connect);
-                mycon.Open();
-                string sql = "SELECT * FROM residents;";
-                MySqlDataAdapter dataAdapter = new MySqlDataAdapter(sql, mycon);
-                DataSet dataSet = new DataSet();
-                dataAdapter.Fill(dataSet);
-                dataGridView1.DataSource = dataSet.Tables[0];
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (TB_Name.Text != "" && TB_LastName.Text != "" && TB_GroupCode.Text != "" && SerialNumber != "")
-            {
-                try
-                {
-                    //string str = "server=localhost;user=root;password=1337;database=vaulttechsecure;port=3306";
-                    MySqlConnection mycon = new MySqlConnection(connect);
-                    mycon.Open();
-                    string query = "INSERT INTO `residents`(`Name` , `Last Name` , `GroupCode` , `SerialNumber`) VALUES ('" + TB_Name.Text + "', '" + TB_LastName.Text + "', '" + Convert.ToInt32(TB_GroupCode.Text) + "', '" + SerialNumber + "');";
-                    MySqlCommand command = new MySqlCommand(query, mycon);
-                    command.ExecuteNonQuery();
-                    mycon.Close();
-                    update();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-            else
-                MessageBox.Show("Все поля должны быть заполнены!", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            TB_Name.Text = ""; TB_LastName.Text = ""; TB_GroupCode.Text = ""; TB_CardNumber.Text = ""; SerialNumber = "";
-        }
-
+   
 
 
         private void button6_Click(object sender, EventArgs e)
@@ -468,7 +420,6 @@ namespace _79412W13._56MHz125KHz
             rand.NextBytes(key);
 
             SerialNumber = BitConverter.ToString(key);
-            TB_CardNumber.Text = SerialNumber;
 
             byte[] message = bufWriteT5577;
             for (byte i = 0; i != 5; i++)
@@ -487,60 +438,6 @@ namespace _79412W13._56MHz125KHz
             else MessageBox.Show("Card read fail!");
 
             SerialNumber = BitConverter.ToString(GetAKey(SendAndReadMessage(bufReadT5577)));
-            TB_CardNumber.Text = SerialNumber;
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            update();
-        }
-
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-            string idNumber = "";
-
-            idNumber = Interaction.InputBox("Enter id number of member to delete", "Deleting a member", "");
-
-            if (idNumber != "")
-                try
-                {
-                    using (MySqlConnection connection = new MySqlConnection(connect))
-                    {
-                        var command = new MySqlCommand("SET FOREIGN_KEY_CHECKS=0; Delete from residents where idresidents = @idresidents; SET FOREIGN_KEY_CHECKS=1", connection);
-                        command.Parameters.Add("@idresidents", MySqlDbType.Int32).Value = Convert.ToInt32(idNumber);
-                        connection.Open();
-                        command.ExecuteNonQuery();
-                        update();
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            else MessageBox.Show("Plsease enter an id to delete a member!");
-        }
-
-        private AuthForm _AuthForm;
-        private void button9_Click(object sender, EventArgs e)
-        {
-            _AuthForm = new AuthForm();
-            _AuthForm.AccessGranted += (o, args) =>
-            {
-                button4.Visible = !button4.Visible;
-                button5.Visible = !button5.Visible;
-                button8.Visible = !button8.Visible;
-                dataGridView1.Visible = !dataGridView1.Visible;
-                _AuthForm.Close();
-                update();
-            };
-            _AuthForm.Show();
-        }
-
-        private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
-        {
-
         }
     }
 }
