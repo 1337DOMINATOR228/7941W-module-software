@@ -1,0 +1,12 @@
+
+/* Important! This file is to only be edited through WebDAV or through the control panel by the client, not theme partners/designers. */
+input.Textbox, textarea, input[type="text"], input[type="password"] {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background: #ffffff;
+    font-size: 13px;
+    height: 38px;
+    margin: 0;
+    padding: 0 1em;
+}
